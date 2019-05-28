@@ -38,7 +38,8 @@ if __name__ == '__main__':
         packet = gpsd.get_current()
     except:
         print("cant connect to gpsd")
-        exit(1)
+        print("forcing debug mode")
+        debug = True
 
     last_speed = -1
 
