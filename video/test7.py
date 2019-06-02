@@ -34,7 +34,6 @@ while 1:
     #k = cv2.waitKey(30) & 0xff
     #if k == 27:
     #    break
-    capture0.destroy()
 
 capture0.release()
 
