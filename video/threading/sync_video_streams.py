@@ -36,7 +36,8 @@ if __name__ == '__main__':
         cv2.imshow("cam3",frame3)
 
         cv2.waitKey(1) & 0xFF
-
+        #TODO make wait for input per frame, have display all cams msec
+        print(cam1.get(cv2.CAP_PROP_POS_MSEC))
         #print(type(frame1))
 
     cam1.stop()
