@@ -1,3 +1,5 @@
+#i think same as 4?
+
 import cv2,time
 
 

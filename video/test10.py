@@ -1,3 +1,5 @@
+#try to read cameras on different threads
+
 import numpy as np
 import cv2
 import copy

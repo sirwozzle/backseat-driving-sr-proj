@@ -1,3 +1,5 @@
+#try to get camera properties
+
 import cv2,time
 
 

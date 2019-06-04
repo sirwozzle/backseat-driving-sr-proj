@@ -1,3 +1,7 @@
+#reads the 3 wifi cameras and trys to display
+#doesnt work cause of
+
+
 import numpy as np
 import cv2
 import copy
@@ -15,9 +19,22 @@ three = cv2.VideoCapture('rtsp://user:password@192.168.1.137/live')
 while(True):
     # Capture frame-by-frame
     #ret, frame = cap.read()
-    ret, frame1 = one.read()
-    ret, frame2 = two.read()
-    ret, frame3 = three.read()
+    try:
+        ret, frame1 = one.read()
+    except:
+        print("cant read 1")
+    try:
+        ret, frame2 = two.read()
+    except:
+        print("cant read 2")
+    try:
+        ret, frame3 = three.read()
+    except:
+        print("cant read 3")
+    #frame1 = cv2.resize(frame1, (1280, 720))
+    #frame2 = cv2.resize(frame2, (1280, 720))
+    #frame3 = cv2.resize(frame3, (1280, 720))
+
     #ret, frame1 = cap1.read()
     #ret, frame2 = cap2.read()
     #ret, frame3 = cap3.read()
@@ -27,9 +44,21 @@ while(True):
 
     # Display the resulting frame
     #cv2.imshow('gray',gray)
-    cv2.imshow('one',frame1)
-    cv2.imshow('two',frame2)
-    cv2.imshow('three',frame3)
+    try:
+        cv2.imshow('one',frame1)
+    except:
+        print("cant show 1")
+    try:
+        pass
+        #cv2.imshow('two',frame2)
+    except:
+        print("cant show 2")
+    try:
+        pass
+        #cv2.imshow('three',frame3)
+    except:
+        print("cant show 3")
+
     #cv2.imshow('built in',frame1)
     #cv2.imshow('steam again2',frame2)
     #cv2.imshow('steam again1',frame1)
@@ -41,6 +70,7 @@ while(True):
 # When everything done, release the capture
 one.release()
 two.release()
+three.release()
 cv2.destroyAllWindows()
 
 

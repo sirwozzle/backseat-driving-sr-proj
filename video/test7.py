@@ -1,4 +1,6 @@
 """
+cycles through stuff via video bus
+
 nick@nick-xps:~$ v4l2-ctl --list-devices
 
 works cycles through all cameras on bus

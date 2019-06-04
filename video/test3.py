@@ -1,3 +1,6 @@
+#try to open 2 usb cameras in different threads
+#copy from stackoverflow+changes
+
 import cv2
 import threading
 

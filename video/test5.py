@@ -1,4 +1,6 @@
 """
+cycles through 4 usb cameras since cant open all at once
+
 nick@nick-xps:~$ v4l2-ctl --list-devices
 
 works cycles through all cameras on bus
