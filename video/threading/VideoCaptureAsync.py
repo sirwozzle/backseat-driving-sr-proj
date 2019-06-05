@@ -8,12 +8,13 @@ http://blog.blitzblit.com/2017/12/24/asynchronous-video-capture-in-python-with-o
 import threading
 import cv2
 
+
 class VideoCaptureAsync:
     def __init__(self, src=0, width=640, height=480):
         self.src = src
         self.cap = cv2.VideoCapture(self.src)
-        #self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        #self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
@@ -21,8 +22,12 @@ class VideoCaptureAsync:
     def set(self, var1, var2):
         self.cap.set(var1, var2)
 
-    def get(self,propId):
+    def get(self, propId):
         return self.cap.get(propId)
+
+    # returns the cameras internal time
+    def get_time(self):
+        return self.cap.get(cv2.CAP_PROP_POS_MSEC)
 
     def start(self):
         if self.started:
@@ -36,6 +41,9 @@ class VideoCaptureAsync:
     def update(self):
         while self.started:
             grabbed, frame = self.cap.read()
+            # TODO make better warning
+            # if not grabbed:
+            #    print("Frame from "+str(self.src)+" not grabbed")
             with self.read_lock:
                 self.grabbed = grabbed
                 self.frame = frame
