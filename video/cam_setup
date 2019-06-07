@@ -1,0 +1,11 @@
+https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks
+
+using this cfw on each camera
+
+Video resolution set to -W1280 -H720
+Bitrate set to 10000
+FrameRate set to 1/25
+Video format set to 0
+Starting v4l2rtspserver-master
+
+in settings

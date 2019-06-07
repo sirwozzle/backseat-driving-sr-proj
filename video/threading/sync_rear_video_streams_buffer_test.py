@@ -146,68 +146,13 @@ if __name__ == '__main__':
         #once there is enough in the buffer
         if buffer_counter > frames_to_buffer:
 
-            #todo get the times at the buffers and use that to ask what index to get
-            # if frames are returned
+            frame2 = cam2_buffer.get_frame(0)
+            frame3 = cam3_buffer.get_frame(0)
 
-            #TODO always get 0th frame in the buffer (or maybe always the middle frame?)
-            # and then compare the times, try to scrub fwd or back to find match
-            cam2_ts = cam2_buffer.get_time(frame_to_grab_from_buffer)
-            cam3_ts = cam3_buffer.get_time(frame_to_grab_from_buffer)
-            #print("cam2 time",cam2_ts,"cam2 current",cam2_current)
-            #print("cam3 time",cam3_ts,"cam3 current",cam3_current)
-
-            #TODO first check who is ahead from live grab
-            # then check if its ahead of the current set frames
-
-            #the camera ahead is saved and other one allowed to continue
-            if cam2_ts > cam3_ts + allowed_time_ahead:
-                #print("cam2 ahead")
-                if cam2_current == None:
-                    cam2_current = cam2_ts
-            elif cam3_ts > cam2_ts + allowed_time_ahead:
-                #print("cam3 ahead")
-                if cam3_current == None:
-                    cam3_current = cam3_ts
-            else:
-                #print("sync")
-                #fn to display the current selected frames
-                cam2_current = cam2_ts
-                cam3_current = cam3_ts
-                #TODO display first
-                showing_frames_this_run = True
-                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
-                cam2_current,cam3_current = clear_currents(cam2_current,cam3_current)
-
-            #if they both been set, then go
-            if cam2_current != None and cam3_current != None:
-                #TODO display first
-                showing_frames_this_run = True
-                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
-                cam2_current,cam3_current = clear_currents(cam2_current,cam3_current)
-            else:
-                #check that the new ts is close enough to the set current
-                if cam2_current != None:
-                    if within_range(cam2_current,cam3_ts,allowed_time_ahead):
-                        cam3_current = cam3_ts
-                if cam3_current != None:
-                    if within_range(cam3_current,cam2_ts,allowed_time_ahead):
-                        cam2_current = cam2_ts
-
-
-            # if they both been set, then go
-            if cam2_current != None and cam3_current != None:
-                #TODO display first
-                showing_frames_this_run = True
-                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
-                cam2_current, cam3_current = clear_currents(cam2_current, cam3_current)
-
-            #TODO rm the and False
-            if showing_frames_this_run and False:
-                #cv2.imshow("cam2", frame2)
-                cv2.imshow("cam2", frame2)
-                #cv2.imshow("cam3", frame3)
-                cv2.imshow("cam3", frame3)
-                showing_frames_this_run = False
+            #cv2.imshow("cam2", frame2)
+            cv2.imshow("cam2", frame2)
+            #cv2.imshow("cam3", frame3)
+            cv2.imshow("cam3", frame3)
 
 
 

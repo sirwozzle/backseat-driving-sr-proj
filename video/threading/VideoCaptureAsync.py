@@ -7,6 +7,7 @@ http://blog.blitzblit.com/2017/12/24/asynchronous-video-capture-in-python-with-o
 
 import threading
 import cv2
+import time
 
 
 class VideoCaptureAsync:
@@ -51,8 +52,11 @@ class VideoCaptureAsync:
     #returns if frame is grabbed, the frame and the timestamp
     def read(self):
         with self.read_lock:
-            frame = self.frame.copy()
             grabbed = self.grabbed
+            if not self.grabbed:
+                #print("Failed to grab frame, trying again in .1s")
+                return self.read()
+            frame = self.frame.copy()
             ts = self.get_time()
         return grabbed, frame, ts
 
