@@ -14,6 +14,7 @@ cam2_current = None
 cam3_current = None
 
 #TODO read a few ahead maybe
+buffer_counter = 0
 for i,j in zip(cam2_buffer.keys(),cam3_buffer.keys()):
     #convert to int for easy mode
     k, l = int(float(i)),int(float(j))
@@ -55,3 +56,5 @@ for i,j in zip(cam2_buffer.keys(),cam3_buffer.keys()):
         cam3_current = l
 
     print("current values",cam2_current,cam3_current)
+
+    buffer_counter+=1

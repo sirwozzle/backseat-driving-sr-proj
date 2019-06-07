@@ -48,11 +48,13 @@ class VideoCaptureAsync:
                 self.grabbed = grabbed
                 self.frame = frame
 
+    #returns if frame is grabbed, the frame and the timestamp
     def read(self):
         with self.read_lock:
             frame = self.frame.copy()
             grabbed = self.grabbed
-        return grabbed, frame
+            ts = self.get_time()
+        return grabbed, frame, ts
 
     def stop(self):
         self.started = False

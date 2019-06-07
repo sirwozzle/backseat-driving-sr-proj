@@ -12,34 +12,45 @@ from VideoCaptureAsync import VideoCaptureAsync
 
 class buffer:
 
-    #TODO make buffer class, or intgreate class into asycn file
-    # this way cam2_buffer = new buffer() and it holds the dicts, as well as lengths and optiosn to pop and push
-    # first sync jsons, then make buffer that can be synced same way
-    # buffers
-    #actual buffers with timestamp:frame
-    #cam2_buffer = dict()
-    #cam3_buffer = dict()
-    #buffer counter:timestamp per buffer
-    #cam2_buffer_counter = dict()
-    #cam3_buffer_counter = dict()
-    #counter of how many frames in buffer
-    #buffer_counter = 0
-    #delay of how many to store before showing
-    #frames_to_buffer = 90
-
-    def __init__(self):
+    def __init__(self,max_length=5):
         #self.buffer = None
-        self.buffer = []
+        self.length = 0;
+        self.frames = []
+        self.times = []
+        #defautl max len to 5
+        self.max_length = max_length
 
-    def add(self,to_add):
-        #TODO make it take the actual tuple of time:frame and add to 2 dicts
+    def add(self,frame,timestamp):
+        self.frames.append(frame)
+        self.times.append(timestamp)
+        self.length+=1
+
+        self.prune()
         return
 
+    def prune(self):
+        if self.length >= self.max_length:
+            self.frames.pop(0)
+            self.times.pop(0)
+            self.length-=1
+        return
+
+    def get_frame(self,index):
+        print("getting frame ",index)
+        return self.frames[index]
+
+    def get_time(self,index):
+        return self.times[index]
+
+    def get_length(self):
+        return self.length
 
 
 if __name__ == '__main__':
-    cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
-               'rtsp://user:password@192.168.1.137/live']
+    #cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
+    #           'rtsp://user:password@192.168.1.137/live']
+    cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
+               'rtsp://user:password@10.10.10.5/live']
 
     # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
     # test(n_frames=60, width=1280, height=720, async=True,captureDevice=cameras[0])
@@ -62,33 +73,14 @@ if __name__ == '__main__':
     cam3.start()
     t1c3 = time.time()
 
-    #TODO make buffer class, or intgreate class into asycn file
-    # this way cam2_buffer = new buffer() and it holds the dicts, as well as lengths and optiosn to pop and push
-    # first sync jsons, then make buffer that can be synced same way
-    # buffers
-    #actual buffers with timestamp:frame
-    cam2_buffer = dict()
-    cam3_buffer = dict()
-    #buffer counter:timestamp per buffer
-    cam2_buffer_counter = dict()
-    cam3_buffer_counter = dict()
+
     #counter of how many frames in buffer
     buffer_counter = 0
     #delay of how many to store before showing
-    frames_to_buffer = 90
-
-    """
-    with open("log.txt", "a") as l:
-        l.write("time to create cam2 " + str(t0c2 - t0) + "\n")
-        l.write("time to create cam3 " + str(t0c3 - t0c2) + "\n")
-        l.write("time to start cam3 " + str(t1c2 - t1) + "\n")
-        l.write("time to start cam3 " + str(t1c3 - t1c2) + "\n")
-
-        l.close()
-
-    print("t0 for cam2",cam2.get_time())
-    print("t0 for cam3",cam3.get_time())
-    """
+    frames_to_buffer = 5
+    #create buffers that hold last 100 frames
+    cam2_buffer = buffer(20)
+    cam3_buffer = buffer(20)
 
     while 1:
         # i = input("q to quit, enter for frame")
@@ -100,35 +92,39 @@ if __name__ == '__main__':
         print("pr time for cam2", cam2.get_time())
         print("pr time for cam3", cam3.get_time())
 
-        r2, frame2 = cam2.read()
-        r3, frame3 = cam3.read()
-        print("ar time for cam2", cam2.get_time())
-        print("ar time for cam3", cam3.get_time())
+        #read from cameras, getting frame and timestamp
+        r2, frame2,ts2 = cam2.read()
+        r3, frame3,ts3 = cam3.read()
+        #if frames are returned, add to buffer
+        if r2:
+            cam2_buffer.add(frame2,ts2)
+        if r3:
+            cam3_buffer.add(frame3,ts3)
+
+        print("ar time for cam2", ts2)
+        print("ar time for cam3", ts3)
         print("")
 
-        #get the camera times
-        cam2_time = cam2.get_time()
-        cam3_time = cam3.get_time()
-        # actual buffer
-        #add the frame to the buffer marked via time
-        cam2_buffer[cam2_time] = frame2
-        cam3_buffer[cam3_time] = frame3
-        #mark the time to the buffer counter so frames can be pulled later
-        cam2_buffer_counter[buffer_counter] = cam2_time
-        cam3_buffer_counter[buffer_counter] = cam3_time
-        #cam2_buffer[cam2.get_time()] = "a"
-        #cam3_buffer[cam3.get_time()] = "b"
+
 
         #once there is enough in the buffer
         if buffer_counter > frames_to_buffer:
+
+            #todo get the times at the buffers and use that to ask what index to get
             # if frames are returned
+
+            #TODO always get 0th frame in the buffer (or maybe always the middle frame?)
+            # and then compare the times, try to scrub fwd or back to find match
+
             #the display the ones from buffer
             if r2:
                 #cv2.imshow("cam2", frame2)
-                cv2.imshow("cam2", cam2_buffer[cam2_buffer_counter[buffer_counter]])
+                cv2.imshow("cam2", cam2_buffer.get_frame(0))
             if r3:
                 #cv2.imshow("cam3", frame3)
-                cv2.imshow("cam3", cam3_buffer[cam3_buffer_counter[buffer_counter]])
+                cv2.imshow("cam3", cam3_buffer.get_frame(0))
+
+
 
         # cv2.waitKey(1) & 0xFF
         k = cv2.waitKey(1) & 0xff
@@ -154,3 +150,7 @@ if __name__ == '__main__':
     # cam1.stop()
     cam2.stop()
     cam3.stop()
+
+    print(cam2_buffer.length)
+    print(cam2_buffer.counts)
+    print(cam2_buffer.times)
