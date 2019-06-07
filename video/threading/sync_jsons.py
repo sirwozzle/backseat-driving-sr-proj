@@ -13,6 +13,7 @@ print(cam3_buffer)
 cam2_current = None
 cam3_current = None
 
+#TODO read a few ahead maybe
 for i,j in zip(cam2_buffer.keys(),cam3_buffer.keys()):
     #convert to int for easy mode
     k, l = int(float(i)),int(float(j))
@@ -31,7 +32,10 @@ for i,j in zip(cam2_buffer.keys(),cam3_buffer.keys()):
 
     #if first run, then done
     if cam2_set and cam3_set:
+        #TODO make this run once buffer has been filled, not actual first
         continue
+
+
     #if 2 > 3
     #TODO if greater than other+-100
     if k > l:

@@ -9,6 +9,34 @@ import json
 
 from VideoCaptureAsync import VideoCaptureAsync
 
+
+class buffer:
+
+    #TODO make buffer class, or intgreate class into asycn file
+    # this way cam2_buffer = new buffer() and it holds the dicts, as well as lengths and optiosn to pop and push
+    # first sync jsons, then make buffer that can be synced same way
+    # buffers
+    #actual buffers with timestamp:frame
+    #cam2_buffer = dict()
+    #cam3_buffer = dict()
+    #buffer counter:timestamp per buffer
+    #cam2_buffer_counter = dict()
+    #cam3_buffer_counter = dict()
+    #counter of how many frames in buffer
+    #buffer_counter = 0
+    #delay of how many to store before showing
+    #frames_to_buffer = 90
+
+    def __init__(self):
+        #self.buffer = None
+        self.buffer = []
+
+    def add(self,to_add):
+        #TODO make it take the actual tuple of time:frame and add to 2 dicts
+        return
+
+
+
 if __name__ == '__main__':
     cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
                'rtsp://user:password@192.168.1.137/live']
@@ -34,6 +62,9 @@ if __name__ == '__main__':
     cam3.start()
     t1c3 = time.time()
 
+    #TODO make buffer class, or intgreate class into asycn file
+    # this way cam2_buffer = new buffer() and it holds the dicts, as well as lengths and optiosn to pop and push
+    # first sync jsons, then make buffer that can be synced same way
     # buffers
     #actual buffers with timestamp:frame
     cam2_buffer = dict()
