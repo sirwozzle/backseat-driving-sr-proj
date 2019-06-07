@@ -17,12 +17,14 @@ class buffer:
         self.length = 0;
         self.frames = []
         self.times = []
+        self.time_to_frame = dict()
         #defautl max len to 5
         self.max_length = max_length
 
     def add(self,frame,timestamp):
         self.frames.append(frame)
         self.times.append(timestamp)
+        self.time_to_frame[timestamp] = frame
         self.length+=1
 
         self.prune()
@@ -35,15 +37,45 @@ class buffer:
             self.length-=1
         return
 
+    #returns frame by timestamp, if timestamp doesnt exist, uses index
     def get_frame(self,index):
-        print("getting frame ",index)
+        if index in self.time_to_frame.keys():
+            return self.time_to_frame[index]
+        #print("getting frame ",index)
         return self.frames[index]
+
 
     def get_time(self,index):
         return self.times[index]
 
     def get_length(self):
         return self.length
+
+def clear_currents(cam2_current,cam3_current):
+    print("PLACEHOLDER TO DISPLAY A FRAME")
+    print("cam2",cam2_current,"cam3",cam3_current)
+    cam2_current = None
+    cam3_current = None
+    #print("")
+    return cam2_current,cam3_current
+
+def get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer):
+    return cam2_buffer.get_frame(cam2_current), cam3_buffer.get_frame(cam3_current)
+
+
+#return if a and b are withing a range of eachother
+def within_range(a,b,range):
+    if a > b:
+        if a-range <= b:
+            return True
+        if b + range >= a:
+            return True
+    if a < b:
+        if a + range >= b:
+            return True
+        if b - range <= a:
+            return True
+    return False
 
 
 if __name__ == '__main__':
@@ -77,20 +109,28 @@ if __name__ == '__main__':
     #counter of how many frames in buffer
     buffer_counter = 0
     #delay of how many to store before showing
-    frames_to_buffer = 5
+    frames_to_buffer = 100
     #create buffers that hold last 100 frames
-    cam2_buffer = buffer(20)
-    cam3_buffer = buffer(20)
+    buffer_length = 400
+    cam2_buffer = buffer(buffer_length)
+    cam3_buffer = buffer(buffer_length)
+
+    #frame_to_grab_from_buffer = int((buffer_length/3)*2)
+    frame_to_grab_from_buffer = 70
+
+    #number of ms that is allowed difference between frames to display them
+    allowed_time_ahead = 75
+
+
+    cam2_current = None
+    cam3_current = None
+    showing_frames_this_run = False
 
     while 1:
         # i = input("q to quit, enter for frame")
         # if i == 'q':
         #    break
 
-        #get the frames and print times
-        #TODO rm times printing
-        print("pr time for cam2", cam2.get_time())
-        print("pr time for cam3", cam3.get_time())
 
         #read from cameras, getting frame and timestamp
         r2, frame2,ts2 = cam2.read()
@@ -100,10 +140,6 @@ if __name__ == '__main__':
             cam2_buffer.add(frame2,ts2)
         if r3:
             cam3_buffer.add(frame3,ts3)
-
-        print("ar time for cam2", ts2)
-        print("ar time for cam3", ts3)
-        print("")
 
 
 
@@ -115,14 +151,62 @@ if __name__ == '__main__':
 
             #TODO always get 0th frame in the buffer (or maybe always the middle frame?)
             # and then compare the times, try to scrub fwd or back to find match
+            cam2_ts = cam2_buffer.get_time(frame_to_grab_from_buffer)
+            cam3_ts = cam3_buffer.get_time(frame_to_grab_from_buffer)
+            #print("cam2 time",cam2_ts,"cam2 current",cam2_current)
+            #print("cam3 time",cam3_ts,"cam3 current",cam3_current)
 
-            #the display the ones from buffer
-            if r2:
+            #TODO first check who is ahead from live grab
+            # then check if its ahead of the current set frames
+
+            #the camera ahead is saved and other one allowed to continue
+            if cam2_ts > cam3_ts + allowed_time_ahead:
+                #print("cam2 ahead")
+                if cam2_current == None:
+                    cam2_current = cam2_ts
+            elif cam3_ts > cam2_ts + allowed_time_ahead:
+                #print("cam3 ahead")
+                if cam3_current == None:
+                    cam3_current = cam3_ts
+            else:
+                #print("sync")
+                #fn to display the current selected frames
+                cam2_current = cam2_ts
+                cam3_current = cam3_ts
+                #TODO display first
+                showing_frames_this_run = True
+                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
+                cam2_current,cam3_current = clear_currents(cam2_current,cam3_current)
+
+            #if they both been set, then go
+            if cam2_current != None and cam3_current != None:
+                #TODO display first
+                showing_frames_this_run = True
+                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
+                cam2_current,cam3_current = clear_currents(cam2_current,cam3_current)
+            else:
+                #check that the new ts is close enough to the set current
+                if cam2_current != None:
+                    if within_range(cam2_current,cam3_ts,allowed_time_ahead):
+                        cam3_current = cam3_ts
+                if cam3_current != None:
+                    if within_range(cam3_current,cam2_ts,allowed_time_ahead):
+                        cam2_current = cam2_ts
+
+
+            # if they both been set, then go
+            if cam2_current != None and cam3_current != None:
+                #TODO display first
+                showing_frames_this_run = True
+                frame2 ,frame3 = get_frames_to_display(cam2_current,cam3_current,cam2_buffer,cam3_buffer)
+                cam2_current, cam3_current = clear_currents(cam2_current, cam3_current)
+
+            if showing_frames_this_run and False:
                 #cv2.imshow("cam2", frame2)
-                cv2.imshow("cam2", cam2_buffer.get_frame(0))
-            if r3:
+                cv2.imshow("cam2", frame2)
                 #cv2.imshow("cam3", frame3)
-                cv2.imshow("cam3", cam3_buffer.get_frame(0))
+                cv2.imshow("cam3", frame3)
+                showing_frames_this_run = False
 
 
 
@@ -145,7 +229,6 @@ if __name__ == '__main__':
         json.dump(cam3_buffer, o)
         o.close()
     """
-
 
     # cam1.stop()
     cam2.stop()
