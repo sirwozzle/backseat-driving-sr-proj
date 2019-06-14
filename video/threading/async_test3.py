@@ -31,6 +31,7 @@ if __name__ == '__main__':
         _,frame1,ts = cam1.read()
         #_,frame2 = cam2.read()
         #_,frame3 = cam3.read()
+        #print(ts)
         cv2.imshow("cam1",frame1)
         #cv2.imshow("cam2",frame2)
         #cv2.imshow("cam3",frame3)

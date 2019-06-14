@@ -79,6 +79,7 @@ if __name__ == '__main__':
     #           'rtsp://user:password@192.168.1.137/live']
     cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
                'rtsp://user:password@10.10.10.5/live']
+    cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.3:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
 
     #cameras = [0,0,0]
     # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
@@ -95,9 +96,9 @@ if __name__ == '__main__':
         #if i == 'q':
         #    break
 
-        _,frame1 = cam1.read()
-        _,frame2 = cam2.read()
-        _,frame3 = cam3.read()
+        _,frame1,ts1 = cam1.read()
+        _,frame2,ts2 = cam2.read()
+        _,frame3,ts3 = cam3.read()
 
         frame23 = splice(left=frame2,right=frame3);
 

@@ -9,3 +9,10 @@ Video format set to 0
 Starting v4l2rtspserver-master
 
 in settings
+
+
+DISPLAY_AXIS disable
+OSD set
+OSD disabled
+
+audio off

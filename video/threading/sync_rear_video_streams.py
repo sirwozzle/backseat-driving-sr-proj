@@ -81,8 +81,7 @@ def within_range(a,b,range):
 if __name__ == '__main__':
     #cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
     #           'rtsp://user:password@192.168.1.137/live']
-    cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
-               'rtsp://user:password@10.10.10.5/live']
+    cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
 
     # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
     # test(n_frames=60, width=1280, height=720, async=True,captureDevice=cameras[0])
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     print("t0c2", t0c2)
     print("time to create cam2 " + str(t0c2 - t0) + "s\n")
 
-    cam3 = VideoCaptureAsync(cameras[2])
+    cam3 = VideoCaptureAsync(cameras[0])
     t0c3 = time.time()
 
     t1 = time.time()
@@ -202,10 +201,10 @@ if __name__ == '__main__':
                 cam2_current, cam3_current = clear_currents(cam2_current, cam3_current)
 
             #TODO rm the and False
-            if showing_frames_this_run and False:
-                #cv2.imshow("cam2", frame2)
+            if showing_frames_this_run:
                 cv2.imshow("cam2", frame2)
-                #cv2.imshow("cam3", frame3)
+                cv2.imshow("cam2", frame2)
+                cv2.imshow("cam3", frame3)
                 cv2.imshow("cam3", frame3)
                 showing_frames_this_run = False
 
