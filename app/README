@@ -1,0 +1,8 @@
+This directory is the componenets of the final product
+soon to be turned into a useable script to start the whole thing
+
+splice_video_streams is what the main camera reader for the rear will be base on
+
+VideocaptureAsync is what is called to read in a camera
+
+get_cam_ips will return each ip is what number camera to be used as inputs for splice
