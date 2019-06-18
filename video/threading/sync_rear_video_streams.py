@@ -82,6 +82,7 @@ if __name__ == '__main__':
     #cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
     #           'rtsp://user:password@192.168.1.137/live']
     cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
+    #cameras = [0,0]
 
     # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
     # test(n_frames=60, width=1280, height=720, async=True,captureDevice=cameras[0])
