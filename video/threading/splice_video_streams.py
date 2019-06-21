@@ -9,6 +9,8 @@ import time
 import threading
 import numpy as np
 from VideoCaptureAsync import VideoCaptureAsync
+import json
+import subprocess
 
 def splice(left,right):
 
@@ -72,23 +74,32 @@ def splice(left,right):
     return combined
     """
 
+def get_cameras():
+
+    with open("cameras.json", "r") as read_file:
+        cameras = json.load(read_file)
+    return cameras
+
+#TODO find left and rigth based on window in car
 
 
 if __name__ == '__main__':
     #cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
     #           'rtsp://user:password@192.168.1.137/live']
-    cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
-               'rtsp://user:password@10.10.10.5/live']
+    #cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
+    #           'rtsp://user:password@10.10.10.5/live']
 
-    cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.3:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
+    #cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.3:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
+
+    cameras = get_cameras()
 
     #cameras = [0,0,0]
     # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
     # test(n_frames=60, width=1280, height=720, async=True,captureDevice=cameras[0])
 
     #cam1 = VideoCaptureAsync(cameras[0])
-    cam2 = VideoCaptureAsync(cameras[0])
-    cam3 = VideoCaptureAsync(cameras[1])
+    cam2 = VideoCaptureAsync(cameras['1'])
+    cam3 = VideoCaptureAsync(cameras['2'])
     #cam1.start()
     cam2.start()
     cam3.start()
