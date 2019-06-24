@@ -9,6 +9,9 @@ import time
 import json
 import numpy as np
 from VideoCaptureAsync import VideoCaptureAsync
+from AsyncImageProcessJobs import Jobs
+from multiprocessing.pool import ThreadPool
+
 
 def splice(left,right):
 
@@ -45,6 +48,12 @@ if __name__ == '__main__':
     #cam1.start()
     cam2.start()
     cam3.start()
+
+    #multithreading bits
+    pool = ThreadPool(processes=2)
+
+    ticker = Jobs.add_scale_to_top_of_image
+
     while 1:
         #i = input("q to quit, enter for frame")
         #if i == 'q':
@@ -53,6 +62,9 @@ if __name__ == '__main__':
         #_,frame1,ts1 = cam1.read()
         _,frame2,ts2 = cam2.read()
         _,frame3,ts3 = cam3.read()
+
+        frame2 = pool.apply_async(ticker, (frame2, frame2, 10)).get()
+        frame3 = pool.apply_async(ticker, (frame3, frame3, 10)).get()
 
         frame23 = splice(left=frame2,right=frame3);
 

@@ -47,3 +47,5 @@ def make_json():
         json.dump(cameras, o)
         o.close()
     print("Output to cameras.json")
+
+make_json()
