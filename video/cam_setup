@@ -10,6 +10,8 @@ Starting v4l2rtspserver-master
 
 in settings
 
+night detettion service off,
+rtsp-mjpg on and h264 off
 
 DISPLAY_AXIS disable
 OSD set

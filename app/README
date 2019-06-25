@@ -1,8 +1,10 @@
 This directory is the componenets of the final product
 soon to be turned into a useable script to start the whole thing
 
-splice_video_streams is what the main camera reader for the rear will be base on
+splice_video_streams_with processing is what the main camera reader for the rear will be base on
 
 VideocaptureAsync is what is called to read in a camera
+AsyncImageProcessJobs are wheere the imaeg processing code goes
+.sh files should be used to run
 
 get_cam_ips will return each ip is what number camera to be used as inputs for splice

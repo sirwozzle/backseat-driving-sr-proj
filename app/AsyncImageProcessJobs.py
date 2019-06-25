@@ -1,6 +1,7 @@
 
 import threading
 import cv2
+import numpy as np
 import time
 
 #image processing jobs to be done
@@ -37,3 +38,99 @@ class Jobs:
         #print("n px",every_n_pixels)
         #return the final worked on image
         return src
+
+    def smoothing_tests(self,src):
+        kernel = np.ones((20, 20), np.float32) / 400
+        dst = cv2.filter2D(src, -1, kernel)
+
+        return dst
+
+    def edges(self,src):
+        #grayscale it
+        gray_image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+        #sharpen it
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(gray_image, -1, kernel)
+
+        #edges
+        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        #kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(gray_image, -1, kernel)
+
+        #dialte
+        kernel = np.ones((5, 5), np.uint8)
+        im = cv2.dilate(im, kernel, iterations=1)
+
+        #sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+        #sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+        #here is good, just resdue noise
+
+        kernel = np.ones((7, 7), np.float32) / 49
+        im = cv2.filter2D(im, -1, kernel)
+        kernel = np.ones((5, 5), np.float32) / 25
+        im = cv2.filter2D(im, -1, kernel)
+
+        # sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+        return im
+
+    #uh, i did something..
+    def matrix(self,src):
+        #grayscale it
+        gray_image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+        #sharpen it
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(gray_image, -1, kernel)
+
+        #edges
+        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        #kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(gray_image, -1, kernel)
+
+        #dialte
+        kernel = np.ones((5, 5), np.uint8)
+        im = cv2.dilate(im, kernel, iterations=1)
+
+        #sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+        #sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+        #sharpen again
+        kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+
+        return im
+
+
+
+
+
+    #TODO fix freezing
+    """
+    [h264 @ 0x2027a00]
+    error
+    while decoding MB 8 24, bytestream -5
+    [h264 @ 0x1bf1a80]
+    error
+    while decoding MB 57 26, bytestream -5
+    """

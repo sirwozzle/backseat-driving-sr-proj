@@ -13,6 +13,7 @@ from AsyncImageProcessJobs import Jobs
 from multiprocessing.pool import ThreadPool
 
 
+#TODO make this function also able to cut off n px from the left of right image and right of left image
 def splice(left, right):
     combined = np.concatenate((left, right), axis=1)
 
