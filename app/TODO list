@@ -2,6 +2,8 @@ change cameras json to label, from left and right cameras instead of 1,2,3
 
 un fisheye the cameras
 
+closing any cam closes all of them
+
 add output to mp4 option for dashcam use
 
 bunch of edge detection and such jobs

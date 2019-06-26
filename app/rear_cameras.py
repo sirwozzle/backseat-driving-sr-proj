@@ -79,7 +79,7 @@ if __name__ == '__main__':
     gamma = Jobs.adjust_gamma
 
     #number of pixels along the center line to remove (half from each image)
-    pixels_to_cut = 40
+    pixels_to_cut = 10
 
     while 1:
         # i = input("q to quit, enter for frame")
