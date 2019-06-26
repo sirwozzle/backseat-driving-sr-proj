@@ -1,0 +1,6 @@
+gpsd-py3==0.3.0
+numpy
+opencv-python
+requests
+imutils
+device
