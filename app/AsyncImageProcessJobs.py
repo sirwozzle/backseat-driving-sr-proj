@@ -45,9 +45,28 @@ class Jobs:
 
         return dst
 
+    def adjust_gamma(self,image):
+        # build a lookup table mapping the pixel values [0, 255] to
+        # their adjusted gamma values
+        gamma = 2.0
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255
+                          for i in np.arange(0, 256)]).astype("uint8")
+
+        # apply gamma correction using the lookup table
+        return cv2.LUT(image, table)
+
+
     def edges(self,src):#TODO steamline and make better
         #grayscale it
-        gray_image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+        im = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+
+        # edges
+        kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
+        im = cv2.filter2D(im, -1, kernel)
+
+        """
         #sharpen it
         kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
         # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
@@ -83,6 +102,7 @@ class Jobs:
         kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
         # kernel = np.array([[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1] [-1,-1, 8, -1,-1],[-1, -1, -1,-1,-1],[-1, -1, -1,-1,-1]])
         im = cv2.filter2D(im, -1, kernel)
+        """
 
         return im
 

@@ -76,9 +76,10 @@ if __name__ == '__main__':
     smoother = Jobs.smoothing_tests
     edge = Jobs.edges
     matrix = Jobs.matrix
+    gamma = Jobs.adjust_gamma
 
     #number of pixels along the center line to remove (half from each image)
-    pixels_to_cut = 10
+    pixels_to_cut = 40
 
     while 1:
         # i = input("q to quit, enter for frame")
@@ -89,12 +90,15 @@ if __name__ == '__main__':
         _, frame2, ts2 = cam2.read()
         _, frame3, ts3 = cam3.read()
 
+        #TODO un fisheye cameras
+
         # adds scale at top fo img
         # frame2 = pool.apply_async(ticker, (frame2, frame2, 10)).get()
         # frame3 = pool.apply_async(ticker, (frame3, frame3, 10)).get()
 
-        frame2 = do_job_on_frame(ticker, frame2)
-        frame3 = do_job_on_frame(ticker, frame3)
+        #frame2 = do_job_on_frame(ticker, frame2)
+        #frame3 = do_job_on_frame(ticker, frame3)
+
         frame23 = splice(left=frame2, right=frame3,pixels_to_rm=pixels_to_cut);
 
         # cv2.imshow("cam1",frame1)
@@ -106,10 +110,14 @@ if __name__ == '__main__':
 
         # cv2.imshow("cam23blur",frame23blur)
 
-        # frame23edges = pool.apply_async(edge, (frame23, frame23)).get()
-        #frame23edges = do_job_on_frame(edge,frame23)
+        frame23gamma = do_job_on_frame(gamma,frame23)
+        cv2.imshow("23 gamma",frame23gamma)
 
-        #cv2.imshow("cam23sharp", frame23edges)
+
+        # frame23edges = pool.apply_async(edge, (frame23, frame23)).get()
+        frame23edges = do_job_on_frame(edge,frame23)
+
+        cv2.imshow("cam23sharp", frame23edges)
 
         # out.write(frame23sharp)
 
