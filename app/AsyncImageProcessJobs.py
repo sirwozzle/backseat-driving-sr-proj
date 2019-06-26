@@ -45,7 +45,7 @@ class Jobs:
 
         return dst
 
-    def edges(self,src):
+    def edges(self,src):#TODO steamline and make better
         #grayscale it
         gray_image = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         #sharpen it
