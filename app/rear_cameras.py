@@ -14,61 +14,50 @@ from multiprocessing.pool import ThreadPool
 import copy
 
 
-# TODO make this function also able to cut off n px from the left of right image and right of left image
+#splices left and right together with pixel columns from overlap removed
 def splice(left, right,pixels_to_rm=0):
-    # b = np.delete(a, -1, axis=1)
 
-
+    #get width of left image
     left_width = left.shape[1]
-
+    #split pixles to remove between the 2 halfs
     cols_to_rm_from_left = int(pixels_to_rm/2)
     cols_to_rm_from_right = pixels_to_rm-cols_to_rm_from_left
 
     #remove from left
     for i in range(0,cols_to_rm_from_left):
         col_to_delete=left_width-1
-        left = np.delete(left, col_to_delete, 1)  # delete second column of C
+        left = np.delete(left, col_to_delete, 1)  # delete last col of left
         left_width-=1
 
     # remove from right
     for i in range(0, cols_to_rm_from_right):
-        right = np.delete(right, 0, 1)  # delete second column of C
+        right = np.delete(right, 0, 1)  # delete first col of right
 
-    #col_to_delete = 1
-    #left = np.delete(left, col_to_delete, 1)  # delete second column of C
-
+    #combine
     combined = np.concatenate((left, right), axis=1)
 
     return combined
 
-
+#load camera json to dict
 def get_cameras():
     with open("cameras.json", "r") as read_file:
         cameras = json.load(read_file)
     return cameras
 
-
+#does a image processing job on a frame in its own thread
 def do_job_on_frame(job, frame):
     return_frame = pool.apply_async(job, (frame, frame)).get()
     return return_frame
 
 
 if __name__ == '__main__':
-    # cameras = ['rtsp://user:password@192.168.1.135/live', 'rtsp://user:password@192.168.1.136/live',
-    #           'rtsp://user:password@192.168.1.137/live']
-    # cameras = ['rtsp://user:password@10.10.10.3/live', 'rtsp://user:password@10.10.10.4/live',
-    #           'rtsp://user:password@10.10.10.5/live']
 
-    # cameras = ["rtsp://10.10.10.2:8554/unicast","rtsp://10.10.10.3:8554/unicast","rtsp://10.10.10.4:8554/unicast"]
-
+    #get cameras
     cameras = get_cameras()
 
-    # cameras = [0,0,0]
-    # test(n_frames=60, width=1280, height=720, async=False,captureDevice=cameras[0])
-    # test(n_frames=60, width=1280, height=720, async=True,captureDevice=cameras[0])
+    #only uses cameras 2,3 asa they aret the rear
 
     # cam1 = VideoCaptureAsync(cameras[0])
-    # TODO uncomment cam3 parts
     cam2 = VideoCaptureAsync(cameras['2'])
     cam3 = VideoCaptureAsync(cameras['3'])
     # cam1.start()
@@ -111,7 +100,6 @@ if __name__ == '__main__':
         # cv2.imshow("cam1",frame1)
         # orgin splice
 
-        # todo uncomment
         cv2.imshow("cam23", frame23)
 
         # frame23blur = pool.apply_async(smoother, (frame23, frame23)).get()
@@ -128,9 +116,6 @@ if __name__ == '__main__':
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        # TODO make wait for input per frame, have display all cams msec
-        # print(cam1.get(cv2.CAP_PROP_POS_MSEC))
-        # print(type(frame1))
 
     # qcam1.stop()
     cam2.stop()
