@@ -46,8 +46,8 @@ class VideoCaptureAsync:
         while self.started:
             grabbed, frame = self.cap.read()
             # TODO make better warning
-            # if not grabbed:
-            #    print("Frame from "+str(self.src)+" not grabbed")
+            if not grabbed:
+                print("Frame from "+str(self.src)+" not grabbed")
             with self.read_lock:
                 self.grabbed = grabbed
                 self.frame = frame

@@ -58,7 +58,7 @@ if __name__ == '__main__':
     #only uses cameras 2,3 asa they aret the rear
 
     # cam1 = VideoCaptureAsync(cameras[0])
-    cam2 = VideoCaptureAsync(cameras['2'])
+    cam2 = VideoCaptureAsync(cameras['1'])
     cam3 = VideoCaptureAsync(cameras['3'])
     # cam1.start()
     cam2.start()
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     gamma = Jobs.adjust_gamma
 
     #number of pixels along the center line to remove (half from each image)
-    pixels_to_cut = 10
+    pixels_to_cut = 62
 
     while 1:
         # i = input("q to quit, enter for frame")
@@ -110,8 +110,8 @@ if __name__ == '__main__':
 
         # cv2.imshow("cam23blur",frame23blur)
 
-        frame23gamma = do_job_on_frame(gamma,frame23)
-        cv2.imshow("23 gamma",frame23gamma)
+        #frame23gamma = do_job_on_frame(gamma,frame23)
+        #cv2.imshow("23 gamma",frame23gamma)
 
 
         # frame23edges = pool.apply_async(edge, (frame23, frame23)).get()

@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     #only uses cameras 2,3 asa they aret the rear
 
-    cam1 = VideoCaptureAsync(cameras['1'])
+    cam1 = VideoCaptureAsync(cameras['2'])
     cam1.start()
     print("started")
     # multithreading bits
@@ -68,6 +68,10 @@ if __name__ == '__main__':
         #frame3 = do_job_on_frame(ticker, frame3)
 
         cv2.imshow("cam1",frame1)
+
+        frame1edge = do_job_on_frame(edge,frame1)
+        cv2.imshow("cam1edge", frame1edge)
+
         # orgin splice
 
         # out.write(frame23sharp)
