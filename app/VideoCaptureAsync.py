@@ -8,6 +8,11 @@ http://blog.blitzblit.com/2017/12/24/asynchronous-video-capture-in-python-with-o
 import threading
 import cv2
 import time
+import datetime
+import os
+
+global error_dir
+error_dir = os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"error_logs")
 
 
 class VideoCaptureAsync:
@@ -47,6 +52,11 @@ class VideoCaptureAsync:
             grabbed, frame = self.cap.read()
             # TODO make better warning
             if not grabbed:
+                stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
+                filename = str(stamp)+".txt"
+                with open(os.path.join(error_dir,filename),"w") as error_file:
+                    error_file.write("frame not grabbed, maybe frozen")
+                    error_file.close()
                 print("Frame from "+str(self.src)+" not grabbed")
             with self.read_lock:
                 self.grabbed = grabbed
