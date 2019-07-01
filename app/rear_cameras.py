@@ -49,8 +49,21 @@ def do_job_on_frame(job, frame):
     return_frame = pool.apply_async(job, (frame, frame)).get()
     return return_frame
 
+#placeholder for trackbar
+def nothing(x):
+    # any operation
+    pass
+
 
 if __name__ == '__main__':
+
+
+    #TODO make the trackbars and configs need an interactive flag, otherwise save values
+    # to a json and load later
+    #make trackbar window
+
+    cv2.namedWindow("Trackbars")
+    cv2.createTrackbar("PX-to-cut", "Trackbars", 0, 180, nothing)
 
     #get cameras
     cameras = get_cameras()
@@ -90,7 +103,6 @@ if __name__ == '__main__':
         _, frame2, ts2 = cam2.read()
         _, frame3, ts3 = cam3.read()
 
-        #TODO un fisheye cameras
 
         # adds scale at top fo img
         # frame2 = pool.apply_async(ticker, (frame2, frame2, 10)).get()
@@ -98,6 +110,9 @@ if __name__ == '__main__':
 
         #frame2 = do_job_on_frame(ticker, frame2)
         #frame3 = do_job_on_frame(ticker, frame3)
+
+        #TODO see rackbars init
+        pixels_to_cut = cv2.getTrackbarPos("PX-to-cut", "Trackbars")
 
         frame23 = splice(left=frame2, right=frame3,pixels_to_rm=pixels_to_cut);
 
