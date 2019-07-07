@@ -7,13 +7,15 @@ def nothing(x):
 
 cap = cv2.VideoCapture(0)
 
-cv2.namedWindow("Trackbars")
-cv2.createTrackbar("L-H", "Trackbars", 0, 180, nothing)
-cv2.createTrackbar("L-S", "Trackbars", 66, 255, nothing)
-cv2.createTrackbar("L-V", "Trackbars", 134, 255, nothing)
-cv2.createTrackbar("U-H", "Trackbars", 180, 180, nothing)
-cv2.createTrackbar("U-S", "Trackbars", 255, 255, nothing)
-cv2.createTrackbar("U-V", "Trackbars", 243, 255, nothing)
+
+#contour trackbars
+cv2.namedWindow("Contour_Mask_controls")
+cv2.createTrackbar("L-H", "Contour_Mask_controls", 0, 180, nothing)
+cv2.createTrackbar("L-S", "Contour_Mask_controls", 66, 255, nothing)
+cv2.createTrackbar("L-V", "Contour_Mask_controls", 134, 255, nothing)
+cv2.createTrackbar("U-H", "Contour_Mask_controls", 180, 180, nothing)
+cv2.createTrackbar("U-S", "Contour_Mask_controls", 255, 255, nothing)
+cv2.createTrackbar("U-V", "Contour_Mask_controls", 243, 255, nothing)
 
 font = cv2.FONT_HERSHEY_COMPLEX
 
@@ -21,12 +23,12 @@ while True:
     _, frame = cap.read()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    l_h = cv2.getTrackbarPos("L-H", "Trackbars")
-    l_s = cv2.getTrackbarPos("L-S", "Trackbars")
-    l_v = cv2.getTrackbarPos("L-V", "Trackbars")
-    u_h = cv2.getTrackbarPos("U-H", "Trackbars")
-    u_s = cv2.getTrackbarPos("U-S", "Trackbars")
-    u_v = cv2.getTrackbarPos("U-V", "Trackbars")
+    l_h = cv2.getTrackbarPos("L-H", "Contour_Mask_controls")
+    l_s = cv2.getTrackbarPos("L-S", "Contour_Mask_controls")
+    l_v = cv2.getTrackbarPos("L-V", "Contour_Mask_controls")
+    u_h = cv2.getTrackbarPos("U-H", "Contour_Mask_controls")
+    u_s = cv2.getTrackbarPos("U-S", "Contour_Mask_controls")
+    u_v = cv2.getTrackbarPos("U-V", "Contour_Mask_controls")
 
     lower_red = np.array([l_h, l_s, l_v])
     upper_red = np.array([u_h, u_s, u_v])

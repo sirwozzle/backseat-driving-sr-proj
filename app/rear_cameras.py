@@ -15,7 +15,7 @@ import copy
 
 
 #splices left and right together with pixel columns from overlap removed
-def splice(left, right,pixels_to_rm=0):
+def splice(left, right,pixels_to_rm=0,height_offset=0):
 
     #get width of left image
     left_width = left.shape[1]
@@ -32,6 +32,22 @@ def splice(left, right,pixels_to_rm=0):
     # remove from right
     for i in range(0, cols_to_rm_from_right):
         right = np.delete(right, 0, 1)  # delete first col of right
+
+
+    if height_offset >= 0:
+        row_to_delete = right.shape[0] -1
+        #do heigth change
+        for i in range(0,height_offset):
+            left = np.delete(left,0,0)
+            right = np.delete(right,row_to_delete,0)
+            row_to_delete-=1
+    else:
+        row_to_delete = left.shape[0] - 1
+        # do heigth change
+        for i in range(0, (-1*height_offset)):
+            right = np.delete(right, 0, 0)
+            left = np.delete(left, row_to_delete, 0)
+            row_to_delete -= 1
 
     #combine
     combined = np.concatenate((left, right), axis=1)
@@ -55,6 +71,8 @@ def nothing(x):
     pass
 
 
+
+
 if __name__ == '__main__':
 
 
@@ -62,8 +80,31 @@ if __name__ == '__main__':
     # to a json and load later
     #make trackbar window
 
-    cv2.namedWindow("Trackbars")
-    cv2.createTrackbar("PX-to-cut", "Trackbars", 0, 180, nothing)
+    cv2.namedWindow("PX-to-cut")
+    cv2.createTrackbar("PX-to-cut", "PX-to-cut", 0, 180, nothing)
+
+    #TODO make toggle like above
+
+    # contour trackbars
+    cv2.namedWindow("Contour_Mask_controls")
+    cv2.createTrackbar("L-H", "Contour_Mask_controls", 0, 180, nothing)
+    cv2.createTrackbar("L-S", "Contour_Mask_controls", 66, 255, nothing)
+    cv2.createTrackbar("L-V", "Contour_Mask_controls", 134, 255, nothing)
+    cv2.createTrackbar("U-H", "Contour_Mask_controls", 180, 180, nothing)
+    cv2.createTrackbar("U-S", "Contour_Mask_controls", 255, 255, nothing)
+    cv2.createTrackbar("U-V", "Contour_Mask_controls", 243, 255, nothing)
+
+
+    cv2.namedWindow("Height_offset")
+    cv2.createTrackbar("Height_offset", "Height_offset", 0, 200, nothing)
+
+
+    output = False
+    #TODO toggle output
+    if output:
+        # Define the codec and create VideoWriter object
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter('output.avi', fourcc, 13.0, (2560, 720))
 
     #get cameras
     cameras = get_cameras()
@@ -71,18 +112,19 @@ if __name__ == '__main__':
     #only uses cameras 2,3 asa they aret the rear
 
     # cam1 = VideoCaptureAsync(cameras[0])
-    cam2 = VideoCaptureAsync(cameras['1'])
-    cam3 = VideoCaptureAsync(cameras['3'])
+    #cam2 = VideoCaptureAsync(cameras['3'])
+    #cam3 = VideoCaptureAsync(cameras['2'])
+
+    #toggle comment if using webcams instead
+    cam2 = VideoCaptureAsync(0)
+
     # cam1.start()
     cam2.start()
-    cam3.start()
+    #cam3.start()
     print("started")
     # multithreading bits
     pool = ThreadPool(processes=2)
 
-    # TODO add output option
-    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    # out = cv2.VideoWriter('output.avi', fourcc, 20.0, (2560, 720))
 
     # define jobs
     ticker = Jobs.add_scale_to_top_of_image
@@ -90,9 +132,18 @@ if __name__ == '__main__':
     edge = Jobs.edges
     matrix = Jobs.matrix
     gamma = Jobs.adjust_gamma
+    contours = Jobs.contours
 
     #number of pixels along the center line to remove (half from each image)
-    pixels_to_cut = 62
+    pixels_to_cut = 0
+
+    #height change for spliced frames
+    height_offset = 100
+    cv2.setTrackbarPos("Height_offset", "Height_offset", 100)
+
+    framerate = 0
+    frames_captured = 0
+    start_time = time.time()
 
     while 1:
         # i = input("q to quit, enter for frame")
@@ -101,7 +152,10 @@ if __name__ == '__main__':
 
         # _,frame1,ts1 = cam1.read()
         _, frame2, ts2 = cam2.read()
-        _, frame3, ts3 = cam3.read()
+        frame3 = copy.copy(frame2)
+        #_, frame3, ts3 = cam3.read()
+
+        frames_captured+=1
 
 
         # adds scale at top fo img
@@ -112,9 +166,14 @@ if __name__ == '__main__':
         #frame3 = do_job_on_frame(ticker, frame3)
 
         #TODO see rackbars init
-        pixels_to_cut = cv2.getTrackbarPos("PX-to-cut", "Trackbars")
+        pixels_to_cut = cv2.getTrackbarPos("PX-to-cut", "PX-to-cut")
+        #TODO make for heigth fofset
+        height_offset = cv2.getTrackbarPos("Height_offset", "Height_offset")-100
 
-        frame23 = splice(left=frame2, right=frame3,pixels_to_rm=pixels_to_cut);
+        frame23 = splice(left=frame2, right=frame3,pixels_to_rm=pixels_to_cut,height_offset=height_offset);
+
+        if output:
+            out.write(frame23)
 
         # cv2.imshow("cam1",frame1)
         # orgin splice
@@ -134,13 +193,35 @@ if __name__ == '__main__':
 
         cv2.imshow("cam23sharp", frame23edges)
 
-        # out.write(frame23sharp)
+
+
+        #TODO contours toggle again
+        l_h = cv2.getTrackbarPos("L-H", "Contour_Mask_controls")
+        l_s = cv2.getTrackbarPos("L-S", "Contour_Mask_controls")
+        l_v = cv2.getTrackbarPos("L-V", "Contour_Mask_controls")
+        u_h = cv2.getTrackbarPos("U-H", "Contour_Mask_controls")
+        u_s = cv2.getTrackbarPos("U-S", "Contour_Mask_controls")
+        u_v = cv2.getTrackbarPos("U-V", "Contour_Mask_controls")
+
+        frame23contours = do_job_on_frame(contours,[frame23,l_h,l_s,l_v,u_h,u_s,u_v])
+
+        cv2.imshow("frame23contours",frame23contours)
+
+
+        #frame23edgecontours = do_job_on_frame(contours,[frame23edges,l_h,l_s,l_v,u_h,u_s,u_v])
+
+        #cv2.imshow("frame23contours",frame23edgecontours)
+
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-
+    end_time = time.time()
+    framerate = frames_captured/(end_time-start_time)
+    print("framerate was ",framerate)
+    print("elapsted time was "+str(end_time-start_time)+" seconds")
     # qcam1.stop()
     cam2.stop()
     cam3.stop()
-    # out.release()
+    if output:
+        out.release()
