@@ -70,7 +70,37 @@ def nothing(x):
     # any operation
     pass
 
+#adds padding to a frame to make it a desired resolution, if it is less
+def add_padding_to_meet_res(frame,res_to_meet):
+    #get the size that the padding has to be
+    width_to_meet = res_to_meet[0]
+    height_to_meet = res_to_meet[1]
 
+    width = frame.shape[1]
+    height = frame.shape[0]
+
+    padding_height = height_to_meet-height
+    padding_width = width_to_meet-width
+
+
+    #add padding to bottom
+    #make white rectangle of needed height and exisiting width
+    img = np.zeros([padding_height, width, 3], dtype=np.uint8)
+    img.fill(255)  # or img[:] = 255
+    #add to frame
+    frame = np.concatenate((frame, img), axis=0)
+
+    # add padding to side
+    # make rectangle of needed width and to_meet height
+    img = np.zeros([height_to_meet, padding_width, 3], dtype=np.uint8)
+    img.fill(255)  # or img[:] = 255
+    # add to side
+    frame = np.concatenate((frame, img), axis=1)
+
+    #print(frame)
+    print(frame.shape)
+
+    return frame
 
 
 if __name__ == '__main__':
@@ -104,6 +134,7 @@ if __name__ == '__main__':
     if output:
         # Define the codec and create VideoWriter object
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        #set resolution
         out = cv2.VideoWriter('output.avi', fourcc, 13.0, (2560, 720))
 
     #get cameras
@@ -167,13 +198,19 @@ if __name__ == '__main__':
 
         #TODO see rackbars init
         pixels_to_cut = cv2.getTrackbarPos("PX-to-cut", "PX-to-cut")
-        #TODO make for heigth fofset
+
+        #make height offset on scale -100 - 100
         height_offset = cv2.getTrackbarPos("Height_offset", "Height_offset")-100
 
         frame23 = splice(left=frame2, right=frame3,pixels_to_rm=pixels_to_cut,height_offset=height_offset);
 
+
+        #TODO rm
+        #outframe23 = add_padding_to_meet_res(frame23, (2560, 720))
+        #cv2.imshow("outframe",outframe23)
         if output:
-            out.write(frame23)
+            outframe23 = add_padding_to_meet_res(frame23,(2560, 720))
+            out.write(outframe23)
 
         # cv2.imshow("cam1",frame1)
         # orgin splice
