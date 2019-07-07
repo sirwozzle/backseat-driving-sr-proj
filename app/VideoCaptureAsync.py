@@ -49,7 +49,13 @@ class VideoCaptureAsync:
 
     def update(self):
         while self.started:
-            grabbed, frame = self.cap.read()
+            #print("updated frame from "+str(self.src))
+            try:
+                grabbed, frame = self.cap.read()
+            except:
+                print("failed to read from cap")
+                grabbed = False
+            #print("grabbed",grabbed)
             # TODO make better warning
             if not grabbed:
                 stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
@@ -58,6 +64,7 @@ class VideoCaptureAsync:
                     error_file.write("frame not grabbed, maybe frozen")
                     error_file.close()
                 print("Frame from "+str(self.src)+" not grabbed")
+
             with self.read_lock:
                 self.grabbed = grabbed
                 self.frame = frame
@@ -76,6 +83,7 @@ class VideoCaptureAsync:
     def stop(self):
         self.started = False
         self.thread.join()
+
 
     def __exit__(self, exec_type, exc_value, traceback):
         self.cap.release()

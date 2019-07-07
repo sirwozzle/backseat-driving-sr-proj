@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     #only uses cameras 2,3 asa they aret the rear
 
-    cam1 = VideoCaptureAsync(cameras['2'])
+    cam1 = VideoCaptureAsync(cameras['3'])
     cam1.start()
     print("started")
     # multithreading bits

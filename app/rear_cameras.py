@@ -12,6 +12,7 @@ from VideoCaptureAsync import VideoCaptureAsync
 from AsyncImageProcessJobs import Jobs
 from multiprocessing.pool import ThreadPool
 import copy
+import datetime
 
 
 #splices left and right together with pixel columns from overlap removed
@@ -98,7 +99,7 @@ def add_padding_to_meet_res(frame,res_to_meet):
     frame = np.concatenate((frame, img), axis=1)
 
     #print(frame)
-    print(frame.shape)
+    #print(frame.shape)
 
     return frame
 
@@ -128,14 +129,17 @@ if __name__ == '__main__':
     cv2.namedWindow("Height_offset")
     cv2.createTrackbar("Height_offset", "Height_offset", 0, 200, nothing)
 
+    combined_res = (1920,540)
 
-    output = False
+    output = True
     #TODO toggle output
     if output:
         # Define the codec and create VideoWriter object
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         #set resolution
-        out = cv2.VideoWriter('output.avi', fourcc, 13.0, (2560, 720))
+        stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
+        name = "output_"+str(stamp)+".avi"
+        out = cv2.VideoWriter(name, fourcc, 35.0, combined_res)
 
     #get cameras
     cameras = get_cameras()
@@ -143,15 +147,15 @@ if __name__ == '__main__':
     #only uses cameras 2,3 asa they aret the rear
 
     # cam1 = VideoCaptureAsync(cameras[0])
-    #cam2 = VideoCaptureAsync(cameras['3'])
-    #cam3 = VideoCaptureAsync(cameras['2'])
+    cam2 = VideoCaptureAsync(cameras['2'])
+    cam3 = VideoCaptureAsync(cameras['1'])
 
     #toggle comment if using webcams instead
-    cam2 = VideoCaptureAsync(0)
+    #cam2 = VideoCaptureAsync(0)
 
     # cam1.start()
     cam2.start()
-    #cam3.start()
+    cam3.start()
     print("started")
     # multithreading bits
     pool = ThreadPool(processes=2)
@@ -172,6 +176,14 @@ if __name__ == '__main__':
     height_offset = 100
     cv2.setTrackbarPos("Height_offset", "Height_offset", 100)
 
+
+
+    #todo json load
+    cv2.setTrackbarPos("Height_offset", "Height_offset", 73)
+    cv2.setTrackbarPos("PX-to-cut", "PX-to-cut", 41)
+
+
+
     framerate = 0
     frames_captured = 0
     start_time = time.time()
@@ -183,9 +195,16 @@ if __name__ == '__main__':
 
         # _,frame1,ts1 = cam1.read()
         _, frame2, ts2 = cam2.read()
-        frame3 = copy.copy(frame2)
-        #_, frame3, ts3 = cam3.read()
 
+        #print("_",_)
+        #TODO lower res and ignore becasue time
+        if not _:
+            print("frame 2 not grabbed")
+        #frame3 = copy.copy(frame2)
+        _, frame3, ts3 = cam3.read()
+        #print("_",_)
+        if not _:
+            print("frame 3 not grabbed")
         frames_captured+=1
 
 
@@ -209,7 +228,7 @@ if __name__ == '__main__':
         #outframe23 = add_padding_to_meet_res(frame23, (2560, 720))
         #cv2.imshow("outframe",outframe23)
         if output:
-            outframe23 = add_padding_to_meet_res(frame23,(2560, 720))
+            outframe23 = add_padding_to_meet_res(frame23,combined_res)
             out.write(outframe23)
 
         # cv2.imshow("cam1",frame1)
@@ -240,9 +259,10 @@ if __name__ == '__main__':
         u_s = cv2.getTrackbarPos("U-S", "Contour_Mask_controls")
         u_v = cv2.getTrackbarPos("U-V", "Contour_Mask_controls")
 
-        frame23contours = do_job_on_frame(contours,[frame23,l_h,l_s,l_v,u_h,u_s,u_v])
+        #TODO renable
+        #frame23contours = do_job_on_frame(contours,[frame23,l_h,l_s,l_v,u_h,u_s,u_v])
 
-        cv2.imshow("frame23contours",frame23contours)
+        #cv2.imshow("frame23contours",frame23contours)
 
 
         #frame23edgecontours = do_job_on_frame(contours,[frame23edges,l_h,l_s,l_v,u_h,u_s,u_v])
@@ -262,3 +282,6 @@ if __name__ == '__main__':
     cam3.stop()
     if output:
         out.release()
+
+    print("px_to_cut",pixels_to_cut)
+    print("height offset",height_offset)

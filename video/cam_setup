@@ -1,8 +1,11 @@
 https://github.com/EliasKotlyar/Xiaomi-Dafang-Hacks
 
+
+ default credentials root/ismart12
+
 using this cfw on each camera
 
-Video resolution set to -W1280 -H720
+Video resolution set to -W960 -H540
 Bitrate set to 10000
 FrameRate set to 1/25
 Video format set to 0
